@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p porAno
+
 # Header
 header=$( zcat operacoes-financiamento-operacoes-indiretas-automaticas.csv.gz | head -n 1 )
 
@@ -12,12 +14,12 @@ anos=$(
 		| tail -n +2
 	)
 
-# Cuidado! Pode acabar selecionando operações que não é do ano certo...
+# Filtra por ano
 for ano in $anos; do
-	file=$ano-operacoes-financiamento-operacoes-indiretas-automaticas.csv
+	file=porAno/$ano-operacoes-financiamento-operacoes-indiretas-automaticas.csv
 	echo $header > $file
 	zcat operacoes-financiamento-operacoes-indiretas-automaticas.csv.gz \
-		| grep $ano \
+		| grep '".*";".*";".*";".*";".*";"$ano-' \
 		>> $file
 done
 
@@ -26,11 +28,10 @@ echo
 # Checa se "deu ruim..."
 for ano in $anos; do
 	echo === $ano
-	file=$ano-operacoes-financiamento-operacoes-indiretas-automaticas.csv
+	file=porAno/$ano-operacoes-financiamento-operacoes-indiretas-automaticas.csv
 	cat $file \
 		| cut -d ';' -f 6 \
 		| sed 's/^[^0-9]*\([0-9]\+\)-.*/\1/g' \
 		| sort -u \
-		| tail -n +2 \
-	)
+		| tail -n +2
 done
