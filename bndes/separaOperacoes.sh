@@ -33,7 +33,9 @@ for ano in $anos; do
 	echo === Separa $ano
 
 	file=porAno/$ano-operacoes-financiamento-operacoes-indiretas-automaticas.csv
-	echo $header > $file
+	echo $header \
+		| cut -d ';' -f 3-7,20-26 \
+		> $file
 	zcat operacoes-financiamento-operacoes-indiretas-automaticas.csv.gz \
 		| grep "^.*;.*;.*;.*;.*;\"${ano}-" \
 		| cut -d ';' -f 3-7,20-26 \
